@@ -40,6 +40,19 @@ function displayTask(task) {
     $("#list").append(syntax);
 }
 
+function testFunction() {
+    $.ajax({
+        url: 'http://fsdiapi.azurewebsites.net',
+        type: 'GET',
+        success: function (data) {
+            console.log(data);
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
+}
+
 function init() {
     console.log('init');
 
