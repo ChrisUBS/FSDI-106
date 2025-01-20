@@ -1,16 +1,52 @@
-function sayHello() {
-    console.log('Hello');
+function saveTask() {
+    console.log("Saving task...");
+
+    // Get values
+    const title = $("#txtTitle").val();
+    const description = $("#txtDescription").val();
+    const color = $("#selColor").val();
+    const date = $("#selDate").val();
+    const status = $("#selStatus").val();
+    const number = $("#numBudget").val();
+    // console.log(title, description, color, date, status, number);
+
+    // Build an object
+    let taskToSave = new Task(title, description, color, date, status, number);
+    console.log(taskToSave);
+
+    // Save to server
+
+    // Display the data recieved from the server
+    displayTask(taskToSave);
+}
+
+function displayTask(task) {
+    let syntax = `
+    <div class='task'>
+        <div class='info'>
+            <h5>${task.title}</h5>
+            <p>${task.description}</p>
+        </div>
+        
+        <label class='status'>${task.status}</label>
+
+        <div class='date-budget'>
+            <label>${task.date}</label>
+            <label>${task.budget}</label>
+        </div>
+    </div>
+    `;
+
+    $("#list").append(syntax);
 }
 
 function init() {
-    console.log('Hello World');
+    console.log('init');
 
-    sayHi('Chris');
-    sayHello();
-}
+    // Load data
 
-function sayHi(name) {
-    console.log('Hi ' + name);
+    // Hook events
+    $('#btnSave').click(saveTask);
 }
 
 window.onload = init;

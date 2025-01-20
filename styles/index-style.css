@@ -1,0 +1,28 @@
+main {
+    display: flex;
+    height: 100vh;
+    /* height: 100px; */
+}
+
+#list {
+    background-color: aqua;
+    flex: 2;
+}
+
+#form {
+    background-color: lightgray;
+    flex: 2;
+}
+
+.task {
+    display: flex;
+    margin: 10px 20px;
+    padding: 10px;
+}
+
+/* Try to cover all the space of both sections */
+/* #div-example {
+    height: 100px;
+    background-color: red;
+    flex: 1;
+} */
