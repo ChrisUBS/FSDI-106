@@ -15,9 +15,42 @@ function saveTask() {
     console.log(taskToSave);
 
     // Save to server
+    $.ajax({
+        type: 'POST',
+        url: "http://fsdiapi.azurewebsites.net/api/tasks/",
+        data: JSON.stringify(taskToSave),
+        contentType: "application/json",
+        success: function (response) {
+            console.log(response);
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
 
     // Display the data recieved from the server
     displayTask(taskToSave);
+}
+
+function loadTask() {
+    $.ajax({
+        type: "GET",
+        url: "http://fsdiapi.azurewebsites.net/api/tasks",
+        success: function (response) {
+            // console.log(response);
+            let data = JSON.parse(response);
+            // console.log(data);
+            // console.log only those elements that were created by your on the server
+            data.forEach(element => {
+                if (element.name === "cubs") {
+                    console.log(element);
+                }
+            });
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
 }
 
 function displayTask(task) {
@@ -57,6 +90,7 @@ function init() {
     console.log('init');
 
     // Load data
+    loadTask();
 
     // Hook events
     $('#btnSave').click(saveTask);
