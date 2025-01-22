@@ -1,21 +1,27 @@
-function saveTask() {
-    console.log("Saving task...");
+async function saveTask() {
+    // console.log("Saving task...");
 
     // Get values
-    const title = $("#txtTitle").val();
-    const description = $("#txtDescription").val();
-    const color = $("#selColor").val();
-    const date = $("#selDate").val();
-    const status = $("#selStatus").val();
-    const number = $("#numBudget").val();
+    const title = $("#txtTitle").val().trim();
+    const description = $("#txtDescription").val().trim();;
+    const color = $("#selColor").val().trim();
+    const date = $("#selDate").val().trim();
+    const status = $("#selStatus").val().trim();;
+    const number = $("#numBudget").val().trim();;
     // console.log(title, description, color, date, status, number);
+
+    // Validate
+    if (title === "" || description === "" || date === "" || number === "") {
+        alert("You must complete all the fields");
+        return;
+    }
 
     // Build an object
     let taskToSave = new Task(title, description, color, date, status, number);
-    console.log(taskToSave);
+    // console.log(taskToSave);
 
     // Save to server
-    $.ajax({
+    await $.ajax({
         type: 'POST',
         url: "http://fsdiapi.azurewebsites.net/api/tasks/",
         data: JSON.stringify(taskToSave),
@@ -29,7 +35,20 @@ function saveTask() {
     });
 
     // Display the data recieved from the server
-    displayTask(taskToSave);
+    $("#items").empty();
+    loadTask();
+
+    // Clean the form
+    cleanForm();
+}
+
+function cleanForm() {
+    $("#txtTitle").val("");
+    $("#txtDescription").val("");
+    $("#selColor").val("black");
+    $("#selDate").val("");
+    $("#selStatus").val("new");
+    $("#numBudget").val("");
 }
 
 function loadTask() {
@@ -37,13 +56,13 @@ function loadTask() {
         type: "GET",
         url: "http://fsdiapi.azurewebsites.net/api/tasks",
         success: function (response) {
-            // console.log(response);
             let data = JSON.parse(response);
-            // console.log(data);
-            // console.log only those elements that were created by your on the server
+            let counter = 0;
             data.forEach(element => {
-                if (element.name === "cubs") {
+                if (element.name === "chris") {
                     console.log(element);
+                    displayTask(element, counter);
+                    counter++;
                 }
             });
         },
@@ -53,24 +72,48 @@ function loadTask() {
     });
 }
 
-function displayTask(task) {
+function displayTask(task, counter) {
     let syntax = `
-    <div class='task'>
-        <div class='info'>
-            <h5>${task.title}</h5>
-            <p>${task.description}</p>
-        </div>
-        
-        <label class='status'>${task.status}</label>
-
-        <div class='date-budget'>
-            <label>${task.date}</label>
-            <label>${task.budget}</label>
+    <div class="card mb-3 mx-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="card-title">${task.title}</h5>
+                    <p class="card-text">${task.description}</p>
+                </div>
+                <span class="badge bg-${getStatusClass(task.status)}">${task.status}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <small class="text-muted">Date: ${task.date}</small>
+                <small class="text-muted">Budget: $${task.budget}</small>
+                <button class="btn btn-danger btn-sm" onclick="deleteTask('${counter}')">Delete</button>
+            </div>
         </div>
     </div>
     `;
 
-    $("#list").append(syntax);
+    $("#items").append(syntax);
+}
+
+// Helper function to assign Bootstrap classes based on the status
+function getStatusClass(status) {
+    switch (status.toLowerCase()) {
+        case "new":
+            return "info";
+        case "in-progress":
+            return "warning";
+        case "completed":
+            return "success";
+        case "cancel":
+            return "secondary";
+        default:
+            return "primary";
+    }
+}
+
+function deleteTask(taskId) {
+    console.log(`Task with ID ${taskId} deleted`);
+    $(`#list .card:has(button[onclick="deleteTask('${taskId}')"])`).remove();
 }
 
 function testFunction() {
